@@ -1,5 +1,6 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
 import { Layout } from './components/layout/Layout';
 import { Home } from './pages/Home';
 import { AllCompetitions } from './pages/AllCompetitions';
@@ -12,6 +13,7 @@ import { LiveDraws } from './pages/LiveDraws';
 import { CompetitionLiveDetail } from './pages/CompetitionLiveDetail';
 import { Profile } from './pages/Profile';
 import { Checkout } from './pages/Checkout';
+import { PaymentSuccess } from './pages/PaymentSuccess';
 import { TermsAndConditions } from './pages/TermsAndConditions';
 import { PrivacyPolicy } from './pages/PrivacyPolicy';
 import { Login } from './pages/Login';
@@ -19,10 +21,13 @@ import { Signup } from './pages/Signup';
 import { PrivateRoute } from './components/PrivateRoute';
 import { PublicRoute } from './components/PublicRoute';
 
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
+
 export function App() {
   return (
-    <Router>
-      <Layout>
+    <Elements stripe={stripePromise}>
+      <Router>
+        <Layout>
         <Routes>
           <Route element={<PublicRoute />}>
             <Route path="/login" element={<Login />} />
@@ -41,12 +46,14 @@ export function App() {
             <Route path="/live-draw/:id" element={<CompetitionLiveDetail />} />
             <Route path="/profile/*" element={<Profile />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/payment/success" element={<PaymentSuccess />} />
             <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           </Route>
         </Routes>
-      </Layout>
-    </Router>
+        </Layout>
+      </Router>
+    </Elements>
   );
 }
 

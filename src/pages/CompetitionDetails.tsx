@@ -5,6 +5,7 @@ import { MinusIcon, PlusIcon, ShoppingCartIcon, CreditCardIcon, ClockIcon, Ticke
 import { CountdownTimer } from '../components/CountdownTimer';
 import { QuestionSection } from '../components/QuestionSection';
 import { SafeImage } from '../components/SafeImage';
+import { SinglePurchaseModal } from '../components/SinglePurchaseModal';
 import { useGetCompetitionByIdQuery } from '../store/api/competitionsApi';
 import { useAddToCartMutation } from '../store/api/cartApi';
 
@@ -19,6 +20,7 @@ export function CompetitionDetails() {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [entryType, setEntryType] = useState<'online' | 'postal'>('online');
   const [showPostalModal, setShowPostalModal] = useState(false);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   
   const { data, error, isLoading: isCompetitionLoading } = useGetCompetitionByIdQuery(id || '');
@@ -61,7 +63,7 @@ export function CompetitionDetails() {
       alert('Please answer the question first!');
       return;
     }
-    navigate('/checkout');
+    setShowPurchaseModal(true);
   };
 
   const handleAddToCart = async () => {
@@ -369,8 +371,7 @@ export function CompetitionDetails() {
                     ⚠ Please answer the question above to purchase tickets
                   </div>}
                 <div className="space-y-3">
-                  <Link to="/checkout">
-                                  <motion.button onClick={handleBuyNow} disabled={!selectedAnswer} className="w-full btn-premium flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed" whileHover={selectedAnswer ? {
+                  <motion.button onClick={handleBuyNow} disabled={!selectedAnswer} className="w-full btn-premium flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed" whileHover={selectedAnswer ? {
                   scale: 1.02
                 } : {}} whileTap={selectedAnswer ? {
                   scale: 0.98
@@ -378,7 +379,6 @@ export function CompetitionDetails() {
                     <CreditCardIcon className="w-5 h-5 mr-2" />
                     Buy Now
                   </motion.button>
-                  </Link>
 
                   <motion.button onClick={handleAddToCart} disabled={!selectedAnswer || isAddingToCart} className="w-full py-3 rounded-xl bg-gradient-end hover:bg-gray-700 transition-colors border border-gray-700 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed" whileHover={selectedAnswer && !isAddingToCart ? {
                   scale: 1.02
@@ -478,6 +478,15 @@ export function CompetitionDetails() {
             </motion.div>
           </motion.div>}
       </AnimatePresence>
+      {/* Single Purchase Modal */}
+      <SinglePurchaseModal
+        isOpen={showPurchaseModal}
+        onClose={() => setShowPurchaseModal(false)}
+        competitionId={competition._id}
+        quantity={quantity}
+        ticketPrice={competition.ticket_price}
+        competitionTitle={competition.title}
+      />
     </div>;
 }
 

@@ -95,6 +95,8 @@ export interface CartItem {
   ticket_price: number;
   quantity: number;
   total_price: number;
+  discount_amount?: number;
+  points_redeemed?: number;
   max_per_person: number;
   existing_tickets: number;
   available_to_add: number;
@@ -108,6 +110,9 @@ export interface CartSummary {
   total_items: number;
   total_price: number;
   item_count: number;
+  discount_amount?: number;
+  points_redeemed?: number;
+  payable_total?: number;
 }
 
 export interface Cart {

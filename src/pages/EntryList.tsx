@@ -199,8 +199,8 @@ export function EntryList() {
                   <div className="flex items-start justify-between mb-3">
                     <div>
                       <h3 className="text-xl font-bold mb-2">{entry.title}</h3>
-                      <div className="text-sm text-text-secondary">
-                        Tickets purchased: {entry.total_purchased_tickets ?? 0}
+                      <div className="text-sm text-text-secondary mb-8">
+                        {/* Tickets purchased: {entry.total_purchased_tickets ?? 0} */}
                       </div>
                     </div>
                     <span

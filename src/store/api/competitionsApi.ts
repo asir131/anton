@@ -85,6 +85,34 @@ export interface ResultsResponse {
   };
 }
 
+export interface LiveStreamResponse {
+  success: boolean;
+  message: string;
+  data: {
+    is_live: boolean;
+    message: string;
+    competition: {
+      _id: string;
+      title: string;
+      slug: string;
+      short_description: string;
+      long_description: string;
+      image_url: string;
+      draw_time: string;
+      live_draw_watching_url: string | null;
+      hls_stream_url: string | null;
+      max_tickets: number;
+      tickets_sold: number;
+    };
+    stream: {
+      roomId: string;
+      viewerCount: number;
+      stream_type: string;
+      hls_available: boolean;
+    };
+  };
+}
+
 export const competitionsApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getCompetitions: builder.query<CompetitionsResponse, { page: number; limit: number }>({
@@ -102,7 +130,10 @@ export const competitionsApi = api.injectEndpoints({
     getResults: builder.query<ResultsResponse, { page?: number; limit?: number }>({
       query: ({ page = 1, limit = 10 }) => `results?page=${page}&limit=${limit}`,
     }),
+    getLiveStream: builder.query<LiveStreamResponse, void>({
+      query: () => 'streams/live',
+    }),
   }),
 });
 
-export const { useGetCompetitionsQuery, useGetCompetitionByIdQuery, useGetMyCompetitionsQuery, useGetCompetitionTicketsQuery, useGetResultsQuery } = competitionsApi;
+export const { useGetCompetitionsQuery, useGetCompetitionByIdQuery, useGetMyCompetitionsQuery, useGetCompetitionTicketsQuery, useGetResultsQuery, useGetLiveStreamQuery } = competitionsApi;

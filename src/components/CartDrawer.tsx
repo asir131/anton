@@ -18,6 +18,7 @@ interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
 export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const { data: cart, isLoading } = useGetCartQuery(undefined, {
     skip: !isOpen,
@@ -66,8 +67,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 <ShoppingCartIcon className="w-16 h-16 text-text-secondary mb-4" />
                 <h3 className="text-lg font-medium mb-2">Your cart is empty</h3>
                 <p className="text-text-secondary mb-6">
-                  Looks like you haven't added any competitions to your cart
-                  yet.
+                  Looks like you haven't added any competitions to your cart yet.
                 </p>
                 <button onClick={onClose} className="btn-premium">
                   Browse Competitions
@@ -117,7 +117,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       </div>
                       <div className="flex items-center">
                         <span className="font-bold mr-3">
-                          £{(item.ticket_price * item.quantity).toFixed(2)}
+                          £{item.total_price.toFixed(2)}
                         </span>
                         <button
                           onClick={() => handleRemoveItem(item._id)}
@@ -135,21 +135,46 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
           {cart && cart.cart_items.length > 0 && (
             <div className="p-5 border-t border-gray-800 bg-gradient-end">
               <div className="space-y-3 mb-4">
-                <div className="flex justify-between">
-                  <span className="text-text-secondary">Subtotal</span>
-                  <span className="font-medium">
-                    £{cart.summary.total_price.toFixed(2)}
-                  </span>
-                </div>
-                <div className="flex justify-between text-lg font-bold pt-2 border-t border-gray-700">
-                  <span>Total</span>
-                  <span>£{cart.summary.total_price.toFixed(2)}</span>
-                </div>
+                {(() => {
+                  const subtotal = cart.summary.total_price;
+                  // Prefer backend-provided discount; otherwise derive from points (100 pts = £1)
+                  const derivedDiscount =
+                    typeof cart.summary.points_redeemed === "number"
+                      ? cart.summary.points_redeemed / 100
+                      : 0;
+                  const discount =
+                    cart.summary.discount_amount ?? derivedDiscount ?? 0;
+                  const payable =
+                    cart.summary.payable_total ??
+                    Math.max(0, subtotal - discount);
+                  return (
+                    <>
+                      <div className="flex justify-between">
+                        <span className="text-text-secondary">Subtotal</span>
+                        <span className="font-medium">£{subtotal.toFixed(2)}</span>
+                      </div>
+                      {discount > 0 && (
+                        <div className="flex justify-between text-accent">
+                          <span>Points Discount</span>
+                          <span>-£{discount.toFixed(2)}</span>
+                        </div>
+                      )}
+                      {typeof cart.summary.points_redeemed === "number" &&
+                        cart.summary.points_redeemed > 0 && (
+                          <div className="flex justify-between text-text-secondary text-sm">
+                            <span>Points Used</span>
+                            <span>{cart.summary.points_redeemed}</span>
+                          </div>
+                        )}
+                      <div className="flex justify-between text-lg font-bold pt-2 border-t border-gray-700">
+                        <span>Total</span>
+                        <span>£{payable.toFixed(2)}</span>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
-              <Link
-                to="/checkout"
-                className="block w-full btn-premium text-center"
-              >
+              <Link to="/checkout" className="block w-full btn-premium text-center">
                 Checkout
               </Link>
             </div>

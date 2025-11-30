@@ -25,8 +25,8 @@ export function Winners() {
     if (!data?.data?.results) return [];
     return data.data.results.map((item) => ({
       id: item._id,
-      name: item.user_id?.name ?? "—",
-      competitionTitle: item.competition_id?.title ?? "—",
+      name: item.user_id?.name ?? "Unknown",
+      competitionTitle: item.competition_id?.title ?? "Unknown",
       prizeImage: item.competition_id?.image_url ?? "",
       ticketNumber: item.ticket_number,
       winDate: new Date(item.draw_date).toLocaleDateString("en-GB"),
@@ -200,7 +200,9 @@ export function Winners() {
                         <div className="text-sm text-text-secondary mb-1">
                           Winner
                         </div>
-                        <div className="font-semibold">{selectedWinner.name}</div>
+                        <div className="font-semibold">
+                          {selectedWinner.name}
+                        </div>
                       </div>
                       <div>
                         <div className="text-sm text-text-secondary mb-1">

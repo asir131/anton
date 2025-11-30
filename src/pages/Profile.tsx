@@ -390,57 +390,100 @@ export function Profile() {
                 className="card-premium p-6"
               >
                 <h2 className="text-2xl font-bold mb-6">Purchase History</h2>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-gray-700">
-                        <th className="text-left py-3 px-4 text-text-secondary font-medium">
-                          Competition
-                        </th>
-                        <th className="text-left py-3 px-4 text-text-secondary font-medium">
-                          Tickets
-                        </th>
-                        <th className="text-left py-3 px-4 text-text-secondary font-medium">
-                          Amount
-                        </th>
-                        <th className="text-left py-3 px-4 text-text-secondary font-medium">
-                          Date
-                        </th>
-                        <th className="text-left py-3 px-4 text-text-secondary font-medium">
-                          Status
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {purchaseHistory.map((purchase) => (
-                        <tr
-                          key={purchase._id}
-                          className="border-b border-gray-800 hover:bg-gray-800/30 transition-colors"
-                        >
-                          <td className="py-4 px-4 font-medium">
-                            {purchase.competition.title}
-                          </td>
-                          <td className="py-4 px-4">{purchase.tickets}</td>
-                          <td className="py-4 px-4">£{purchase.amount}</td>
-                          <td className="py-4 px-4 text-text-secondary">
-                            {purchase.date}
-                          </td>
-                          <td className="py-4 px-4">
-                            <span
-                              className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                purchase.status === "completed"
-                                  ? "bg-green-500/20 text-green-400"
-                                  : "bg-yellow-500/20 text-yellow-400"
-                              }`}
+                {isPurchaseHistoryLoading && (
+                  <p className="text-text-secondary mb-4">
+                    Loading purchase history...
+                  </p>
+                )}
+                {!isPurchaseHistoryLoading && purchaseHistory.length === 0 && (
+                  <p className="text-text-secondary mb-4">
+                    No purchase history found.
+                  </p>
+                )}
+                {purchaseHistory.length > 0 && (
+                  <>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-gray-700">
+                            <th className="text-left py-3 px-4 text-text-secondary font-medium">
+                              Competition
+                            </th>
+                            <th className="text-left py-3 px-4 text-text-secondary font-medium">
+                              Tickets
+                            </th>
+                            <th className="text-left py-3 px-4 text-text-secondary font-medium">
+                              Amount
+                            </th>
+                            <th className="text-left py-3 px-4 text-text-secondary font-medium">
+                              Date
+                            </th>
+                            <th className="text-left py-3 px-4 text-text-secondary font-medium">
+                              Status
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {purchaseHistory.map((purchase) => (
+                            <tr
+                              key={purchase._id}
+                              className="border-b border-gray-800 hover:bg-gray-800/30 transition-colors"
                             >
-                              {purchase.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                              <td className="py-4 px-4 font-medium">
+                                {purchase.competition.title}
+                              </td>
+                              <td className="py-4 px-4">{purchase.tickets}</td>
+                              <td className="py-4 px-4">
+                                £{purchase.amount.toFixed(2)}
+                              </td>
+                              <td className="py-4 px-4 text-text-secondary">
+                                {new Date(purchase.date).toLocaleDateString()}
+                              </td>
+                              <td className="py-4 px-4">
+                                <span
+                                  className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                    purchase.status === "completed"
+                                      ? "bg-green-500/20 text-green-400"
+                                      : "bg-yellow-500/20 text-yellow-400"
+                                  }`}
+                                >
+                                  {purchase.status}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="flex items-center justify-between mt-4">
+                      <span className="text-sm text-text-secondary">
+                        Page {purchasePage} of {totalPurchasePages}
+                      </span>
+                      <div className="flex gap-2">
+                        <button
+                          className="px-3 py-2 rounded-lg bg-gradient-end hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          onClick={() =>
+                            setPurchasePage(Math.max(1, purchasePage - 1))
+                          }
+                          disabled={purchasePage === 1}
+                        >
+                          Prev
+                        </button>
+                        <button
+                          className="px-3 py-2 rounded-lg bg-gradient-end hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          onClick={() =>
+                            setPurchasePage(
+                              Math.min(totalPurchasePages, purchasePage + 1)
+                            )
+                          }
+                          disabled={purchasePage === totalPurchasePages}
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
               </motion.div>
             )}
             {/* Settings */}

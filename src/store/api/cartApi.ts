@@ -47,12 +47,84 @@ export const cartApi = api.injectEndpoints({
       { points_to_redeem: number }
     >({
       query: (body) => ({
-        url: '/create-intent/checkout',
+        url: '/payments/create-intent/checkout',
         method: 'POST',
         body,
       }),
+      transformResponse: (response: { 
+        success: boolean;
+        message: string;
+        data: {
+          payment_intent_id: string;
+          client_secret: string;
+          amount: number;
+          currency: string;
+          cart_total: number;
+          discount_amount: number;
+          points_redeemed: number;
+        }
+      }) => response.data,
+    }),
+    createSinglePurchaseIntent: builder.mutation<
+      {
+        payment_intent_id: string;
+        client_secret: string;
+        amount: number;
+        currency: string;
+      },
+      { competition_id: string; quantity: number }
+    >({
+      query: (body) => ({
+        url: '/payments/create-intent/single',
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (response: {
+        success: boolean;
+        message: string;
+        data: {
+          payment_intent_id: string;
+          client_secret: string;
+          amount: number;
+          currency: string;
+        }
+      }) => response.data,
+    }),
+    getPaymentStatus: builder.query<
+      {
+        payment_intent_id: string;
+        status: string;
+        amount: number;
+        currency: string;
+        tickets_created: boolean;
+        created_at: string;
+        updated_at: string;
+      },
+      string
+    >({
+      query: (paymentIntentId) => ({
+        url: `/payments/status/${paymentIntentId}`,
+      }),
+      transformResponse: (response: { data: any }) => response.data,
+    }),
+    clearCart: builder.mutation<void, void>({
+      query: () => ({
+        url: '/user/cart/clear',
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Cart'],
     }),
   }),
 });
 
-export const { useGetCartQuery, useUpdateCartItemMutation, useRemoveCartItemMutation, useAddToCartMutation, useCreateCheckoutIntentMutation } = cartApi;
+export const {
+  useGetCartQuery,
+  useUpdateCartItemMutation,
+  useRemoveCartItemMutation,
+  useAddToCartMutation,
+  useCreateCheckoutIntentMutation,
+  useCreateSinglePurchaseIntentMutation,
+  useGetPaymentStatusQuery,
+  useLazyGetPaymentStatusQuery,
+  useClearCartMutation,
+} = cartApi;

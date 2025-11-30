@@ -19,6 +19,16 @@ import { SafeImage } from "../components/SafeImage";
 import { useGetCompetitionByIdQuery } from "../store/api/competitionsApi";
 import { useAddToCartMutation } from "../store/api/cartApi";
 import { useGetPointsSummaryQuery } from "../store/api/profileApi";
+import React, { useState } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MinusIcon, PlusIcon, ShoppingCartIcon, CreditCardIcon, ClockIcon, TicketIcon, TrophyIcon, UsersIcon } from 'lucide-react';
+import { CountdownTimer } from '../components/CountdownTimer';
+import { QuestionSection } from '../components/QuestionSection';
+import { SafeImage } from '../components/SafeImage';
+import { SinglePurchaseModal } from '../components/SinglePurchaseModal';
+import { useGetCompetitionByIdQuery } from '../store/api/competitionsApi';
+import { useAddToCartMutation } from '../store/api/cartApi';
 
 export function CompetitionDetails() {
   const { id } = useParams<{ id: string }>();
@@ -29,6 +39,7 @@ export function CompetitionDetails() {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [entryType, setEntryType] = useState<"online" | "postal">("online");
   const [showPostalModal, setShowPostalModal] = useState(false);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
   const { data, error, isLoading: isCompetitionLoading } =
@@ -100,7 +111,7 @@ export function CompetitionDetails() {
     if (!ensureCorrectAnswer()) {
       return;
     }
-    navigate("/checkout");
+    setShowPurchaseModal(true);
   };
 
   const handleAddToCart = async () => {
@@ -566,17 +577,11 @@ export function CompetitionDetails() {
                   </div>
                 )}
                 <div className="space-y-3">
-                  <motion.button
-                    onClick={handleBuyNow}
-                    disabled={selectedAnswer !== correctAnswer}
-                    className="w-full btn-premium flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-                    whileHover={
-                      selectedAnswer === correctAnswer ? { scale: 1.02 } : {}
-                    }
-                    whileTap={
-                      selectedAnswer === correctAnswer ? { scale: 0.98 } : {}
-                    }
-                  >
+                  <motion.button onClick={handleBuyNow} disabled={!selectedAnswer} className="w-full btn-premium flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed" whileHover={selectedAnswer ? {
+                  scale: 1.02
+                } : {}} whileTap={selectedAnswer ? {
+                  scale: 0.98
+                } : {}}>
                     <CreditCardIcon className="w-5 h-5 mr-2" />
                     Buy Now
                   </motion.button>
@@ -714,6 +719,14 @@ export function CompetitionDetails() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
-  );
+      {/* Single Purchase Modal */}
+      <SinglePurchaseModal
+        isOpen={showPurchaseModal}
+        onClose={() => setShowPurchaseModal(false)}
+        competitionId={competition._id}
+        quantity={quantity}
+        ticketPrice={competition.ticket_price}
+        competitionTitle={competition.title}
+      />
+    </div>;
 }

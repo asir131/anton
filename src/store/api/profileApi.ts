@@ -48,6 +48,38 @@ export interface PointsHistoryResponse {
   };
 }
 
+export interface PurchaseHistoryItem {
+  _id: string;
+  competition: {
+    _id: string;
+    title: string;
+    slug: string;
+    image_url: string;
+  };
+  tickets: number;
+  amount: number;
+  date: string;
+  status: string;
+  payment_intent_id?: string | null;
+  transaction_id?: string | null;
+}
+
+export interface PurchaseHistoryResponse {
+  success: boolean;
+  message: string;
+  data: {
+    purchase_history: PurchaseHistoryItem[];
+    pagination?: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+      hasNext: boolean;
+      hasPrev: boolean;
+    };
+  };
+}
+
 export const profileApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getProfile: builder.query<ProfileUser, void>({
@@ -80,7 +112,17 @@ export const profileApi = api.injectEndpoints({
       
       providesTags: ['Profile'],
     }),
+    getPurchaseHistory: builder.query<PurchaseHistoryResponse, { page?: number; limit?: number }>({
+      query: ({ page = 1, limit = 10 }) => `user/profile/purchase-history?page=${page}&limit=${limit}`,
+      providesTags: ['Profile'],
+    }),
   }),
 });
 
-export const { useGetProfileQuery, useUpdateProfileMutation, useGetPointsSummaryQuery, useGetPointsHistoryQuery } = profileApi;
+export const {
+  useGetProfileQuery,
+  useUpdateProfileMutation,
+  useGetPointsSummaryQuery,
+  useGetPointsHistoryQuery,
+  useGetPurchaseHistoryQuery,
+} = profileApi;

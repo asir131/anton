@@ -14,8 +14,8 @@ import {
   useUpdateProfileMutation,
   useGetPointsSummaryQuery,
   useGetPointsHistoryQuery,
+  useGetPurchaseHistoryQuery,
 } from "../store/api/profileApi";
-import { log } from "console";
 
 export function Profile() {
   const [activeSection, setActiveSection] = useState("account");
@@ -25,6 +25,10 @@ export function Profile() {
   const pointsPerPage = 10;
   const { data: pointsHistoryData, isLoading: isPointsHistoryLoading } =
     useGetPointsHistoryQuery({ page: pointsPage, limit: pointsPerPage });
+  const [purchasePage, setPurchasePage] = useState(1);
+  const purchasePerPage = 10;
+  const { data: purchaseHistoryData, isLoading: isPurchaseHistoryLoading } =
+    useGetPurchaseHistoryQuery({ page: purchasePage, limit: purchasePerPage });
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -41,17 +45,6 @@ export function Profile() {
     { id: "tickets", label: "Purchase History", icon: TicketIcon },
     { id: "settings", label: "Settings", icon: SettingsIcon },
   ];
-
-  const purchaseHistory = Array.from({ length: 5 }, (_, i) => ({
-    id: `purchase-${i + 1}`,
-    competitionTitle: ["Luxury Sports Car", "Dream Vacation", "Gaming Console"][
-      i % 3
-    ],
-    tickets: Math.floor(Math.random() * 5) + 1,
-    amount: (Math.random() * 50 + 10).toFixed(2),
-    date: new Date(2024, 0, i + 1).toLocaleDateString(),
-    status: ["completed", "pending"][i % 2],
-  }));
 
   // Seed form state from profile when it loads
   useEffect(() => {
@@ -72,7 +65,9 @@ export function Profile() {
     [];
   const pointsPagination = pointsHistoryData?.data?.pagination;
   const totalPointsPages = pointsPagination?.totalPages ?? 1;
-  console.log("pointsHistory", pointsHistory);
+  const purchaseHistory = purchaseHistoryData?.data?.purchase_history ?? [];
+  const purchasePagination = purchaseHistoryData?.data?.pagination;
+  const totalPurchasePages = purchasePagination?.totalPages ?? 1;
 
   const handleEditOrSave = async () => {
     if (!isEditing) {
@@ -419,11 +414,11 @@ export function Profile() {
                     <tbody>
                       {purchaseHistory.map((purchase) => (
                         <tr
-                          key={purchase.id}
+                          key={purchase._id}
                           className="border-b border-gray-800 hover:bg-gray-800/30 transition-colors"
                         >
                           <td className="py-4 px-4 font-medium">
-                            {purchase.competitionTitle}
+                            {purchase.competition.title}
                           </td>
                           <td className="py-4 px-4">{purchase.tickets}</td>
                           <td className="py-4 px-4">£{purchase.amount}</td>

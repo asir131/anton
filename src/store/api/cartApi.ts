@@ -34,7 +34,25 @@ export const cartApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Cart'],
     }),
+    createCheckoutIntent: builder.mutation<
+      {
+        payment_intent_id: string;
+        client_secret: string;
+        amount: number;
+        currency: string;
+        cart_total: number;
+        discount_amount: number;
+        points_redeemed: number;
+      },
+      { points_to_redeem: number }
+    >({
+      query: (body) => ({
+        url: '/create-intent/checkout',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 });
 
-export const { useGetCartQuery, useUpdateCartItemMutation, useRemoveCartItemMutation, useAddToCartMutation } = cartApi;
+export const { useGetCartQuery, useUpdateCartItemMutation, useRemoveCartItemMutation, useAddToCartMutation, useCreateCheckoutIntentMutation } = cartApi;

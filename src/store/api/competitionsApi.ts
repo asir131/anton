@@ -50,6 +50,41 @@ export interface CompetitionTicketsResponse {
   };
 }
 
+export interface ResultsResponse {
+  success: boolean;
+  message: string;
+  data: {
+    results: {
+      _id: string;
+      competition_id: {
+        _id: string;
+        title: string;
+        image_url: string;
+        slug: string;
+      };
+      user_id: {
+        _id: string;
+        name: string;
+        email: string;
+      };
+      ticket_number: string;
+      prize_value: number;
+      draw_video_url?: string;
+      draw_date: string;
+      createdAt: string;
+      updatedAt: string;
+    }[];
+    pagination?: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+      hasNext: boolean;
+      hasPrev: boolean;
+    };
+  };
+}
+
 export const competitionsApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getCompetitions: builder.query<CompetitionsResponse, { page: number; limit: number }>({
@@ -64,7 +99,10 @@ export const competitionsApi = api.injectEndpoints({
     getCompetitionTickets: builder.query<CompetitionTicketsResponse, { id: string; page?: number; limit?: number }>({
       query: ({ id, page = 1, limit = 10 }) => `tickets/competition/${id}?page=${page}&limit=${limit}`,
     }),
+    getResults: builder.query<ResultsResponse, { page?: number; limit?: number }>({
+      query: ({ page = 1, limit = 10 }) => `results?page=${page}&limit=${limit}`,
+    }),
   }),
 });
 
-export const { useGetCompetitionsQuery, useGetCompetitionByIdQuery, useGetMyCompetitionsQuery, useGetCompetitionTicketsQuery } = competitionsApi;
+export const { useGetCompetitionsQuery, useGetCompetitionByIdQuery, useGetMyCompetitionsQuery, useGetCompetitionTicketsQuery, useGetResultsQuery } = competitionsApi;

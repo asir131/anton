@@ -75,3 +75,27 @@ body {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 }
+
+/* Custom Scrollbar Styles */
+.scrollable-modal {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) rgba(31, 41, 55, 0.3);
+}
+
+.scrollable-modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollable-modal::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.3);
+  border-radius: 4px;
+}
+
+.scrollable-modal::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 4px;
+}
+
+.scrollable-modal::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.7);
+}
